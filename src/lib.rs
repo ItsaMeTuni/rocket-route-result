@@ -28,17 +28,15 @@ use std::fmt::Formatter;
 use std::io::Cursor;
 
 #[cfg(feature = "okapi-0_4")]
-use okapi::openapi3::Responses;
-#[cfg(feature = "okapi-0_4")]
-use rocket_okapi::response::OpenApiResponder;
-#[cfg(feature = "okapi-0_4")]
-use rocket_okapi::util::add_schema_response;
-#[cfg(feature = "okapi-0_4")]
-use rocket_okapi::gen::OpenApiGenerator;
-#[cfg(feature = "okapi-0_4")]
-use rocket_okapi::util::produce_any_responses;
-#[cfg(feature = "okapi-0_4")]
-use schemars::JsonSchema;
+use {
+    okapi::openapi3::Responses,
+    rocket_okapi::response::OpenApiResponder,
+    rocket_okapi::util::add_schema_response,
+    rocket_okapi::gen::OpenApiGenerator,
+    rocket_okapi::util::produce_any_responses,
+    schemars::JsonSchema,
+};
+
 
 /// Every route in the project should return this,
 /// it implements Responder.
