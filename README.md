@@ -1,16 +1,64 @@
 # Rocket RouteResult
 
-This crate provides a `RouteResult` type to be used with the [Rocket](https://rocket.rs/) framework.
-It is basically a `Result` with a variant for a few of the most common
-HTTP status codes.
+## Overview
 
-`RouteResult` implements `Responder` and it will return a proper response
-based on its value (return a 404 for `RouteResult::NotFound` or a 200 with
-json-serialized payload for `RouteResult::Ok`).
+This crate provides a `RouteResult` type to be used with the [Rocket](https://rocket.rs/) framework.
+It is basically a `Result` with more variants that can be returned from your routes. You just
+have to return one of the variants (based on the desired status code) and it
+will handle sending the correct HTTP status code, payload serialization
+and error logging. 
+
+Examples:
+```rust
+use rocket_route_result::RouteResult;
+
+struct Payload {
+    number: i32
+}
+
+#[get("/some/resource")]
+fn get_some_resource() -> RouteResult<Payload> {
+    let payload = Payload {
+        number: 42
+    };
+
+    // Just return our payload
+    RouteResult::Ok(payload)
+}
+
+#[post("/restricted/action")]
+fn get_restricted_resource() -> RouteResult<()> {
+    if check_credentials() {
+        // do stuff
+    } else {
+        // User unauthorized
+        RouteResult::Unauthorized
+    }   
+}
+```
+
 
 It implements `Try`, so you can use the `?` operator inside your routes and,
 if a `Result` is an `Err`, a `RouteResult::InternalError` will be returned,
 a 500 response will be sent to the client and the error will be logged.
+
+```rust
+#[get("/broken/resource")]
+fn get_broken_resource() -> RouteResult<Foo> {
+    
+    // db.get_foo() returns an Err.
+    // Because of the ?, this line will return
+    // a RouteResult::InternalError with whatever
+    // error get_foo returns. The error will also
+    // be logged, but it will NOT get sent to the user.
+    let payload = db.get_foo()?;
+
+    // This will never execute because get_foo is broken
+    RouteResult::Ok(payload)
+}
+```
+
+## Installation
 
 This package is not on cargo because I'm lazy, you can use it like
 ```
@@ -23,14 +71,7 @@ crate for use with Swagger, just enable the `okapi-0_4` feature.
 rocket_route_result = { git = "https://github.com/ItsaMeTuni/rocket-route-result", features = ["okapi"] }
 ```
 
-To use it just return `RouteResult` from your Rocket routes. E.g.
-```rust
-use rocket_route_result::RouteResult;
-#[get("/some/resource")]
-fn get_some_resource() -> RouteResult<String> {
-    RouteResult::Ok("It works!".to_owned())
-}
-```
+## The `RouteResult`
 
 Here's the declaration of `RouteResult`, so you can see all of its
 variants.
