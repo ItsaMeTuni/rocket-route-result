@@ -27,6 +27,19 @@ use std::error::Error;
 use std::fmt::Formatter;
 use std::io::Cursor;
 
+#[cfg(feature = "okapi-0_4")]
+use okapi::openapi3::Responses;
+#[cfg(feature = "okapi-0_4")]
+use rocket_okapi::response::OpenApiResponder;
+#[cfg(feature = "okapi-0_4")]
+use rocket_okapi::util::add_schema_response;
+#[cfg(feature = "okapi-0_4")]
+use rocket_okapi::gen::OpenApiGenerator;
+#[cfg(feature = "okapi-0_4")]
+use rocket_okapi::util::produce_any_responses;
+#[cfg(feature = "okapi-0_4")]
+use schemars::JsonSchema;
+
 /// Every route in the project should return this,
 /// it implements Responder.
 ///
@@ -138,7 +151,7 @@ impl<'r, T: Serialize + Debug + 'static> Responder<'r> for RouteResult<T>
     }
 }
 
-#[cfg(feature = "okapi-0.4")]
+#[cfg(feature = "okapi-0_4")]
 impl<T: Serialize + Debug + JsonSchema + 'static> OpenApiResponder<'_> for RouteResult<T>
 {
     fn responses(gen: &mut OpenApiGenerator) -> rocket_okapi::Result<Responses> {

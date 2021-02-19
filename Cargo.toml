@@ -10,7 +10,9 @@ edition = "2018"
 rocket = "0.4"
 serde = { version = "1.0" }
 serde_json = "1.0.57"
-okapi = { version = "0.4", optional = true }
+okapi = { version = "0.4", features = ["derive_json_schema"], optional = true }
+rocket_okapi = { version = "0.5", optional = true }
+schemars = { version = "0.7", default-features = false, optional = true }
 
 [features]
-okapi-0_4 = ["okapi"]
+okapi-0_4 = ["okapi", "rocket_okapi", "schemars"]
